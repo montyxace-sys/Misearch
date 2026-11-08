@@ -399,4 +399,54 @@ public partial class MainWindow
 
     private void OpenMsoft_Click(object sender, MouseButtonEventArgs e) =>
         NavigateActive("https://msoft.com.es");
+
+    private void OpenPdf_Click(object sender, RoutedEventArgs e) => OpenPdfDialog();
+
+    private void Print_Click(object sender, RoutedEventArgs e) => PrintCurrent();
+
+    private void PrintCurrent()
+    {
+        var core = _activeTab?.View.CoreWebView2;
+        if (core == null)
+        {
+            ShowToast("No hay ninguna página para imprimir.", error: true);
+            return;
+        }
+        try
+        {
+            core.ShowPrintUI(CoreWebView2PrintDialogKind.Browser);
+        }
+        catch (Exception ex)
+        {
+            ShowToast("No se pudo abrir la impresión: " + ex.Message, error: true);
+        }
+    }
+
+    private void OpenPdfDialog()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Abrir PDF",
+            Filter = "Documentos PDF (*.pdf)|*.pdf|Todos los archivos (*.*)|*.*",
+            CheckFileExists = true
+        };
+        if (dialog.ShowDialog(this) == true)
+            OpenPdfFile(dialog.FileName);
+    }
+
+    private void OpenPdfFile(string path)
+    {
+        try
+        {
+            var url = new Uri(path).AbsoluteUri;
+            if (_activeTab != null && _activeTab.Url.StartsWith(NewTabUrl, StringComparison.OrdinalIgnoreCase))
+                NavigateActive(url);
+            else
+                _ = CreateTabAsync(url);
+        }
+        catch (Exception ex)
+        {
+            ShowToast("No se pudo abrir el PDF: " + ex.Message, error: true);
+        }
+    }
 }

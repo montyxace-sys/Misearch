@@ -57,6 +57,39 @@ public static class MihomoConfigBuilder
         return sb.ToString();
     }
 
+    public static string BuildWarp(WarpProfileData warp, int port)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"mixed-port: {port}");
+        sb.AppendLine("allow-lan: false");
+        sb.AppendLine("mode: rule");
+        sb.AppendLine("log-level: warning");
+        sb.AppendLine("ipv6: false");
+        sb.AppendLine("dns:");
+        sb.AppendLine("  enable: true");
+        sb.AppendLine("  ipv6: false");
+        sb.AppendLine("  nameserver:");
+        sb.AppendLine("    - 1.1.1.1");
+        sb.AppendLine("    - 1.0.0.1");
+        sb.AppendLine("proxies:");
+        sb.AppendLine($"  - name: {ProxyName}");
+        sb.AppendLine("    type: wireguard");
+        sb.AppendLine($"    server: {Quote(warp.EndpointHost)}");
+        sb.AppendLine($"    port: {warp.EndpointPort}");
+        sb.AppendLine($"    ip: {Quote(warp.AddressV4 + "/32")}");
+        if (!string.IsNullOrWhiteSpace(warp.AddressV6))
+            sb.AppendLine($"    ipv6: {Quote(warp.AddressV6 + "/128")}");
+        sb.AppendLine($"    private-key: {Quote(warp.PrivateKey)}");
+        sb.AppendLine($"    public-key: {Quote(warp.PeerPublicKey)}");
+        sb.AppendLine($"    reserved: [{warp.Reserved[0]}, {warp.Reserved[1]}, {warp.Reserved[2]}]");
+        sb.AppendLine("    udp: true");
+        sb.AppendLine("    mtu: 1280");
+        sb.AppendLine("    remote-dns-resolve: true");
+        sb.AppendLine("rules:");
+        sb.AppendLine($"  - MATCH,{ProxyName}");
+        return sb.ToString();
+    }
+
     public static string BuildFromClash(string clashYaml, int port)
     {
         var stream = new YamlStream();

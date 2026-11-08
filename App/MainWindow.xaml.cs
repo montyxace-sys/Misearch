@@ -520,6 +520,11 @@ public partial class MainWindow : Window
             SecurityIcon.Text = "\uE7BA";
             SecurityIcon.Foreground = (Brush)FindResource("AmberBrush");
         }
+        else if (url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
+        {
+            SecurityIcon.Text = "\uE8A5";
+            SecurityIcon.Foreground = (Brush)FindResource("AccentBrush");
+        }
         else
         {
             SecurityIcon.Text = "\uE774";
@@ -593,6 +598,8 @@ public partial class MainWindow : Window
             case "ctrl+t": _ = CreateTabAsync(NewTabUrl); break;
             case "ctrl+w": CloseTab(tab); break;
             case "ctrl+l": FocusAddress(); break;
+            case "ctrl+o": OpenPdfDialog(); break;
+            case "ctrl+p": PrintCurrent(); break;
             case "ctrl+r": tab.View.CoreWebView2?.Reload(); break;
             case "ctrl+shift+delete": _ = ClearDataAsync(); break;
             case "ctrl++": ChangeZoom(0.1); break;
@@ -605,7 +612,7 @@ public partial class MainWindow : Window
 
     private const string ShortcutScript = """
         (() => {
-          const known = new Set(['ctrl+t','ctrl+w','ctrl+l','ctrl+r','ctrl+shift+delete','ctrl++','ctrl+-','ctrl+0','alt+arrowleft','alt+arrowright']);
+          const known = new Set(['ctrl+t','ctrl+w','ctrl+l','ctrl+o','ctrl+p','ctrl+r','ctrl+shift+delete','ctrl++','ctrl+-','ctrl+0','alt+arrowleft','alt+arrowright']);
           window.addEventListener('keydown', (event) => {
             const parts = [];
             if (event.ctrlKey || event.metaKey) parts.push('ctrl');
@@ -632,6 +639,8 @@ public partial class MainWindow : Window
         {
             if (e.Key == Key.T) { _ = CreateTabAsync(NewTabUrl); e.Handled = true; }
             else if (e.Key == Key.L) { FocusAddress(); e.Handled = true; }
+            else if (e.Key == Key.O) { OpenPdfDialog(); e.Handled = true; }
+            else if (e.Key == Key.P) { PrintCurrent(); e.Handled = true; }
             else if (e.Key == Key.W) { if (_activeTab != null) CloseTab(_activeTab); e.Handled = true; }
             else if (e.Key == Key.R) { _activeTab?.View.CoreWebView2?.Reload(); e.Handled = true; }
             else if (e.Key is Key.OemPlus or Key.Add) { ChangeZoom(0.1); e.Handled = true; }

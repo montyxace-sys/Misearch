@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
@@ -23,6 +24,9 @@ public partial class MainWindow
         var yaml = _settings.VpnProfileKind switch
         {
             "wireguard" => MihomoConfigBuilder.BuildWireGuard(WireGuardProfile.Parse(text), port),
+            "warp" => MihomoConfigBuilder.BuildWarp(
+                JsonSerializer.Deserialize<WarpProfileData>(text)
+                    ?? throw new InvalidOperationException("El perfil WARP está dañado."), port),
             "clash" => MihomoConfigBuilder.BuildFromClash(text, port),
             _ => throw new InvalidOperationException("Tipo de perfil desconocido.")
         };
@@ -67,19 +71,23 @@ public partial class MainWindow
         }
         else
         {
-            VpnStateText.Text = installed ? "VPN detenida" : "VPN no configurada";
+            VpnStateText.Text = installed ? "VPN detenida" : "VPN lista para activar";
             VpnStateDot.Fill = (Brush)FindResource("MutedBrush");
             VpnDetailText.Text = installed
                 ? "El motor está instalado pero no se pudo iniciar."
-                : "Descarga el motor Mihomo (código abierto) para activar la VPN integrada.";
+                : "Pulsa Activar VPN: se descarga el motor Mihomo y se crea un perfil WARP gratuito.";
             VpnPillText.Text = "VPN";
             VpnDot.Fill = (Brush)FindResource("MutedBrush");
             StatusVpnText.Text = "VPN no disponible";
         }
 
-        VpnProfileText.Text = ProfileExists()
-            ? $"Perfil {( _settings.VpnProfileKind == "wireguard" ? "WireGuard" : "Clash/Mihomo")} · {Path.GetFileName(_settings.VpnProfilePath)}"
-            : "No hay perfil importado. Puedes importar un .conf de WireGuard o un .yaml de Clash/Mihomo.";
+        VpnProfileText.Text = _settings.VpnProfileKind switch
+        {
+            "wireguard" => $"Perfil WireGuard · {Path.GetFileName(_settings.VpnProfilePath)}",
+            "warp" => "VPN rápida WARP (Cloudflare) · perfil automático",
+            "clash" => $"Perfil Clash/Mihomo · {Path.GetFileName(_settings.VpnProfilePath)}",
+            _ => "Sin perfil. Activar VPN crea uno gratuito WARP; también puedes importar .conf o .yaml."
+        };
 
         VpnActionButton.Content = vpnActive ? "Desconectar VPN" : "Activar VPN";
         VpnActionButton.IsEnabled = !_vpnBusy;
@@ -119,13 +127,6 @@ public partial class MainWindow
 
     private async Task EnableVpnAsync()
     {
-        if (!ProfileExists())
-        {
-            ShowToast("Importa primero un perfil WireGuard o Clash.", error: true);
-            OpenVpnPanel();
-            return;
-        }
-
         _vpnBusy = true;
         UpdateVpnUi();
         try
@@ -136,6 +137,9 @@ public partial class MainWindow
                 if (!ok)
                     return;
             }
+
+            if (!ProfileExists())
+                await EnsureWarpProfileAsync();
 
             var port = _proxyActive ? _proxyPort : FindFreePort();
             var configPath = BuildVpnConfig(port);
@@ -161,6 +165,19 @@ public partial class MainWindow
             _vpnBusy = false;
             UpdateVpnUi();
         }
+    }
+
+    private async Task EnsureWarpProfileAsync()
+    {
+        ShowToast("Creando perfil VPN rápida WARP…");
+        var warp = await WarpService.RegisterAsync();
+        AppPaths.EnsureDirectories();
+        var target = Path.Combine(AppPaths.VpnDir, "warp.json");
+        File.WriteAllText(target, JsonSerializer.Serialize(warp, new JsonSerializerOptions { WriteIndented = true }));
+
+        _settings.VpnProfilePath = target;
+        _settings.VpnProfileKind = "warp";
+        _settingsStore.Save();
     }
 
     private async Task DisableVpnAsync()

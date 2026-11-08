@@ -8,7 +8,7 @@ namespace Misearch.Core.Vpn;
 
 public sealed class MihomoManager : IDisposable
 {
-    private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(30) };
+    private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(5) };
     private readonly object _logGate = new();
     private readonly StringBuilder _stderr = new();
     private Process? _process;
@@ -146,6 +146,7 @@ public sealed class MihomoManager : IDisposable
 
         string? downloadUrl = null;
         string? digest = null;
+        long? assetId = null;
         foreach (var asset in root.GetProperty("assets").EnumerateArray())
         {
             var name = asset.GetProperty("name").GetString() ?? "";
@@ -157,12 +158,14 @@ public sealed class MihomoManager : IDisposable
             {
                 downloadUrl = asset.GetProperty("browser_download_url").GetString();
                 digest = asset.TryGetProperty("digest", out var d) ? d.GetString() : null;
+                assetId = asset.TryGetProperty("id", out var i) ? i.GetInt64() : null;
                 break;
             }
             if (downloadUrl == null)
             {
                 downloadUrl = asset.GetProperty("browser_download_url").GetString();
                 digest = asset.TryGetProperty("digest", out var d) ? d.GetString() : null;
+                assetId = asset.TryGetProperty("id", out var i) ? i.GetInt64() : null;
             }
         }
 
@@ -173,23 +176,7 @@ public sealed class MihomoManager : IDisposable
         try
         {
             progress?.Report((0.05, "Descargando motor VPN (Mihomo)…"));
-            using (var download = await _http.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
-            {
-                download.EnsureSuccessStatusCode();
-                var total = download.Content.Headers.ContentLength ?? 0;
-                await using var source = await download.Content.ReadAsStreamAsync(cancellationToken);
-                await using var target = File.Create(tempZip);
-                var buffer = new byte[81920];
-                long copied = 0;
-                int read;
-                while ((read = await source.ReadAsync(buffer, cancellationToken)) > 0)
-                {
-                    await target.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
-                    copied += read;
-                    if (total > 0)
-                        progress?.Report((0.05 + 0.8 * copied / total, "Descargando motor VPN (Mihomo)…"));
-                }
-            }
+            await DownloadEngineAsync(downloadUrl, assetId, tempZip, progress, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(digest) && digest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase))
             {
@@ -203,8 +190,11 @@ public sealed class MihomoManager : IDisposable
             using (var zip = ZipFile.OpenRead(tempZip))
             {
                 var entry = zip.Entries.FirstOrDefault(e =>
-                    e.Name.Equals("mihomo.exe", StringComparison.OrdinalIgnoreCase))
-                    ?? throw new InvalidOperationException("El ZIP no contiene mihomo.exe.");
+                        e.Name.Equals("mihomo.exe", StringComparison.OrdinalIgnoreCase))
+                    ?? zip.Entries.FirstOrDefault(e =>
+                        e.Name.StartsWith("mihomo", StringComparison.OrdinalIgnoreCase) &&
+                        e.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                    ?? throw new InvalidOperationException("El ZIP no contiene el ejecutable de Mihomo.");
                 entry.ExtractToFile(EnginePath, overwrite: true);
             }
 
@@ -217,6 +207,67 @@ public sealed class MihomoManager : IDisposable
         finally
         {
             try { File.Delete(tempZip); } catch (Exception) { }
+        }
+    }
+
+    private async Task DownloadEngineAsync(string downloadUrl, long? assetId, string targetPath,
+        IProgress<(double Percent, string Message)>? progress, CancellationToken cancellationToken)
+    {
+        var sources = new List<(string Url, bool ViaApi)>();
+        if (!string.IsNullOrWhiteSpace(downloadUrl))
+            sources.Add((downloadUrl, false));
+        if (assetId is { } id)
+            sources.Add(($"https://api.github.com/repos/MetaCubeX/mihomo/releases/assets/{id}", true));
+
+        Exception? lastError = null;
+        for (var round = 0; round < 2; round++)
+        {
+            foreach (var (url, viaApi) in sources)
+            {
+                try
+                {
+                    await DownloadFromAsync(url, viaApi, targetPath, progress, cancellationToken);
+                    return;
+                }
+                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        throw;
+                    lastError = ex;
+                }
+            }
+            await Task.Delay(1000, cancellationToken);
+        }
+
+        throw lastError ?? new InvalidOperationException("No se pudo descargar el motor VPN.");
+    }
+
+    private async Task DownloadFromAsync(string url, bool viaApi, string targetPath,
+        IProgress<(double Percent, string Message)>? progress, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.UserAgent.ParseAdd("Misearch/0.1");
+        if (viaApi)
+            request.Headers.Accept.ParseAdd("application/octet-stream");
+
+        using var download = await _http.SendAsync(request,
+            HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        if (!download.IsSuccessStatusCode)
+            throw new HttpRequestException(
+                $"El servidor de descargas respondió {(int)download.StatusCode}.");
+
+        var total = download.Content.Headers.ContentLength ?? 0;
+        await using var source = await download.Content.ReadAsStreamAsync(cancellationToken);
+        await using var target = File.Create(targetPath);
+        var buffer = new byte[81920];
+        long copied = 0;
+        int read;
+        while ((read = await source.ReadAsync(buffer, cancellationToken)) > 0)
+        {
+            await target.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+            copied += read;
+            if (total > 0)
+                progress?.Report((0.05 + 0.8 * copied / total, "Descargando motor VPN (Mihomo)…"));
         }
     }
 

@@ -102,7 +102,7 @@
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button x:Name="VpnPill" Style="{StaticResource SecondaryButton}" Padding="10,6" Margin="2,0,2,0"
-                            Click="VpnPill_Click" ToolTip="Estado de la VPN">
+                            Click="VpnPill_Click" ToolTip="Estado de la VPN" AutomationProperties.Name="VPN">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse x:Name="VpnDot" Width="7" Height="7" Fill="{StaticResource MutedBrush}"
                                      VerticalAlignment="Center" />
@@ -111,8 +111,9 @@
                     </Button>
                     <Button x:Name="ShieldButton" Style="{StaticResource IconButton}" Content="&#xEA18;"
                             Click="Shield_Click" ToolTip="Privacidad y bloqueos" />
+                    <Button Style="{StaticResource IconButton}" Content="&#xE749;" Click="Print_Click" ToolTip="Imprimir (Ctrl+P)" AutomationProperties.Name="Imprimir" />
                     <Button Style="{StaticResource IconButton}" Content="&#xE896;" Click="OpenDownloads_Click" ToolTip="Descargas" />
-                    <Button Style="{StaticResource IconButton}" Content="&#xE712;" Click="Menu_Click" ToolTip="Menú" />
+                    <Button x:Name="MenuButton" Style="{StaticResource IconButton}" Content="&#xE712;" Click="Menu_Click" ToolTip="Menú" AutomationProperties.Name="Menú" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -183,6 +184,20 @@
                                             <TextBlock Text="Descargas" Margin="10,0,0,0" />
                                         </StackPanel>
                                     </Button>
+                                    <Button Style="{StaticResource SecondaryButton}" Margin="0,0,0,6" HorizontalContentAlignment="Left" Click="OpenPdf_Click" AutomationProperties.Name="Abrir PDF">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
+                                            <TextBlock Text="Abrir PDF" Margin="10,0,0,0" />
+                                            <TextBlock Text="Ctrl+O" FontSize="10" Foreground="{StaticResource MutedBrush}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Style="{StaticResource SecondaryButton}" Margin="0,0,0,6" HorizontalContentAlignment="Left" Click="Print_Click" AutomationProperties.Name="Imprimir">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE749;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
+                                            <TextBlock Text="Imprimir" Margin="10,0,0,0" />
+                                            <TextBlock Text="Ctrl+P" FontSize="10" Foreground="{StaticResource MutedBrush}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
 
                                 <StackPanel Margin="0,8,0,6">
@@ -207,7 +222,7 @@
                                         <TextBlock x:Name="HomeProtectionText" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0" />
                                     </StackPanel>
                                 </Border>
-                                <TextBlock Text="Misearch 0.1 · © 2026 MSoft" Style="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,14,0,2" />
+                                <TextBlock Text="Misearch 0.1.1 · © 2026 MSoft" Style="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,14,0,2" />
                                 <TextBlock HorizontalAlignment="Center" FontSize="11" Foreground="{StaticResource AccentBrush}" Cursor="Hand"
                                            Text="Diseñado por MSoft · msoft.com.es" MouseLeftButtonUp="OpenMsoft_Click" />
                             </StackPanel>
@@ -346,7 +361,7 @@
                 </StackPanel>
                 <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock x:Name="StatusVpnText" Text="VPN desactivada" Style="{StaticResource MutedText}" Margin="0,0,14,0" />
-                    <TextBlock Text="Misearch 0.1" Style="{StaticResource MutedText}" />
+                    <TextBlock Text="Misearch 0.1.1" Style="{StaticResource MutedText}" />
                 </StackPanel>
             </Grid>
         </Border>

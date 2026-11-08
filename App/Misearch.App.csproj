@@ -16,7 +16,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>Misearch</AssemblyName>
     <RootNamespace>Misearch.App</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\misearch.ico</ApplicationIcon>
   </PropertyGroup>
