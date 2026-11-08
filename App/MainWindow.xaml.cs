@@ -66,11 +66,25 @@ public partial class MainWindow : Window
         AddressBox.TextChanged += (_, _) => UpdateAddressPlaceholder();
     }
 
+    private void LoadBrandImage()
+    {
+        try
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "Assets", "brand.png");
+            if (File.Exists(path))
+                BrandImage.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(path));
+        }
+        catch (Exception)
+        {
+        }
+    }
+
     private async void OnWindowLoaded(object sender, RoutedEventArgs e)
     {
         _settings = _settingsStore.Load();
         _historyStore.Load();
         _blocklist.Load();
+        LoadBrandImage();
 
         _mihomo.StateChanged += OnMihomoStateChanged;
         ApplySettingsToUi();

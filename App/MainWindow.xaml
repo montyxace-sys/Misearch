@@ -15,7 +15,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="38" />
+            <RowDefinition Height="44" />
             <RowDefinition Height="54" />
             <RowDefinition Height="34" />
             <RowDefinition Height="*" />
@@ -33,15 +33,13 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="26" Height="26" CornerRadius="8" Background="{StaticResource AccentGradient}">
-                        <Viewbox Margin="5">
-                            <Path Data="M4 18V6.8c0-.7.9-1 1.3-.4L12 16l6.7-9.6c.4-.6 1.3-.3 1.3.4V18"
-                                  Stroke="White" StrokeThickness="2.6" StrokeStartLineCap="Round"
-                                  StrokeEndLineCap="Round" StrokeLineJoin="Round" />
-                        </Viewbox>
-                    </Border>
-                    <TextBlock Text="Misearch" FontFamily="Segoe UI Semibold" FontSize="13.5" Margin="8,0,0,0"
-                               VerticalAlignment="Center" />
+                    <Image x:Name="BrandImage" Width="28" Height="28"
+                           RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center" />
+                    <StackPanel Margin="8,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="M" FontFamily="Segoe UI Black" FontSize="16" LineHeight="16"
+                                   LineStackingStrategy="BlockLineHeight" />
+                        <TextBlock Text="isearch" FontSize="8.5" Margin="1,1,0,0" Foreground="#A6B1C4" />
+                    </StackPanel>
                 </StackPanel>
 
                 <Border Grid.Column="1" Margin="10,0,0,0" Padding="8,3" CornerRadius="6"
@@ -209,7 +207,9 @@
                                         <TextBlock x:Name="HomeProtectionText" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0" />
                                     </StackPanel>
                                 </Border>
-                                <TextBlock Text="Misearch 0.1 · MSoft" Style="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,14,0,4" />
+                                <TextBlock Text="Misearch 0.1 · © 2026 MSoft" Style="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,14,0,2" />
+                                <TextBlock HorizontalAlignment="Center" FontSize="11" Foreground="{StaticResource AccentBrush}" Cursor="Hand"
+                                           Text="Diseñado por MSoft · msoft.com.es" MouseLeftButtonUp="OpenMsoft_Click" />
                             </StackPanel>
 
                             <!-- Ajustes -->
@@ -286,7 +286,7 @@
                                 <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="2,8,0,0">
                                     Misearch crea un túnel privado solo para este navegador. Si el motor se cae, el tráfico queda bloqueado (kill switch).
                                 </TextBlock>
-                                <TextBlock Margin="2,8,0,0" FontSize="11.5" Foreground="#6EA8FF" Cursor="Hand"
+                                <TextBlock Margin="2,8,0,0" FontSize="11.5" Foreground="{StaticResource AccentBrush}" Cursor="Hand"
                                            Text="Motor Mihomo · código abierto (GPL-3.0)"
                                            MouseLeftButtonUp="OpenMihomoSource_Click" />
                             </StackPanel>

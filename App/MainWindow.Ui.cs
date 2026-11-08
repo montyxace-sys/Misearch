@@ -396,4 +396,7 @@ public partial class MainWindow
 
     private void OpenMihomoSource_Click(object sender, MouseButtonEventArgs e) =>
         Process.Start(new ProcessStartInfo("https://github.com/MetaCubeX/mihomo") { UseShellExecute = true });
+
+    private void OpenMsoft_Click(object sender, MouseButtonEventArgs e) =>
+        NavigateActive("https://msoft.com.es");
 }
