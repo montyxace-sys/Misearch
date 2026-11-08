@@ -222,7 +222,7 @@
                                         <TextBlock x:Name="HomeProtectionText" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0" />
                                     </StackPanel>
                                 </Border>
-                                <TextBlock Text="Misearch 0.1.1 · © 2026 MSoft" Style="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,14,0,2" />
+                                <TextBlock Text="Misearch 0.1.2 · © 2026 MSoft" Style="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,14,0,2" />
                                 <TextBlock HorizontalAlignment="Center" FontSize="11" Foreground="{StaticResource AccentBrush}" Cursor="Hand"
                                            Text="Diseñado por MSoft · msoft.com.es" MouseLeftButtonUp="OpenMsoft_Click" />
                             </StackPanel>
@@ -361,7 +361,7 @@
                 </StackPanel>
                 <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock x:Name="StatusVpnText" Text="VPN desactivada" Style="{StaticResource MutedText}" Margin="0,0,14,0" />
-                    <TextBlock Text="Misearch 0.1.1" Style="{StaticResource MutedText}" />
+                    <TextBlock Text="Misearch 0.1.2" Style="{StaticResource MutedText}" />
                 </StackPanel>
             </Grid>
         </Border>

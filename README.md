@@ -6,13 +6,13 @@ Navegador de escritorio para Windows centrado en privacidad: bloquea rastreadore
 
 ## Descargas
 
-Última versión: **0.1.1**. Todas las versiones están en [Releases](https://github.com/montyxace-sys/Misearch/releases).
+Última versión: **0.1.2**. Todas las versiones están en [Releases](https://github.com/montyxace-sys/Misearch/releases).
 
 | Formato | Descarga directa |
 | --- | --- |
-| Portable (ZIP, x64) | [Misearch-0.1.1-win-x64.zip](https://github.com/montyxace-sys/Misearch/releases/download/v0.1.1/Misearch-0.1.1-win-x64.zip) |
+| Portable (ZIP, x64) | [Misearch-0.1.2-win-x64.zip](https://github.com/montyxace-sys/Misearch/releases/download/v0.1.2/Misearch-0.1.2-win-x64.zip) |
 
-Comprueba la integridad de lo descargado con [SHA256SUMS.txt](https://github.com/montyxace-sys/Misearch/releases/download/v0.1.1/SHA256SUMS.txt).
+Comprueba la integridad de lo descargado con [SHA256SUMS.txt](https://github.com/montyxace-sys/Misearch/releases/download/v0.1.2/SHA256SUMS.txt).
 
 El ZIP contiene `Misearch.exe` (autocontenido, no necesita .NET instalado) y la carpeta `Assets`. Descomprime todo junto y ejecuta `Misearch.exe`. Necesita el runtime de Microsoft Edge WebView2, incluido de serie en Windows 10 y 11 actualizados.
 
@@ -53,7 +53,7 @@ La VPN se aplica con `--proxy-server` de WebView2 apuntando al core local de Mih
 
 El core Mihomo es software libre GPL-3.0 y **no se redistribuye**: se descarga en tiempo de ejecución desde las releases oficiales de MetaCubeX, verificando el SHA-256 publicado.
 
-## Limitaciones de esta versión (0.1.1)
+## Limitaciones de esta versión (0.1.2)
 
 - Solo Windows 10/11 de 64 bits.
 - Una ventana y un perfil: todas las pestañas comparten sesión y proxy.

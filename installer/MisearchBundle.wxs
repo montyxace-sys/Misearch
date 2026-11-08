@@ -1,0 +1,21 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+  <Bundle
+    Name="Misearch"
+    Version="0.1.2"
+    Manufacturer="MSoft"
+    UpgradeCode="425641E9-39BD-4F34-8805-B74CDACDEF8D"
+    IconSourceFile="$(var.IconFile)">
+
+    <BootstrapperApplication>
+      <bal:WixStandardBootstrapperApplication
+        Theme="hyperlinkLicense"
+        LicenseUrl="https://github.com/montyxace-sys/Misearch/blob/main/LICENSE"
+        SuppressOptionsUI="yes" />
+    </BootstrapperApplication>
+
+    <Chain>
+      <MsiPackage SourceFile="$(var.MsiPath)" Vital="yes" Compressed="yes" />
+    </Chain>
+  </Bundle>
+</Wix>

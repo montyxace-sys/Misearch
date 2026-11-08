@@ -25,9 +25,17 @@ public partial class MainWindow
         PanelTitleText.Text = title;
         PanelIcon.Text = icon;
         SidePanel.Visibility = Visibility.Visible;
+
+        // El WebView2 es una superficie nativa que siempre se dibuja por encima de WPF.
+        // Reducimos el área del navegador para que el panel lateral quede visible y clicable.
+        ViewsHost.Margin = new Thickness(0, 0, SidePanel.Width + 20, 0);
     }
 
-    private void ClosePanel() => SidePanel.Visibility = Visibility.Collapsed;
+    private void ClosePanel()
+    {
+        SidePanel.Visibility = Visibility.Collapsed;
+        ViewsHost.Margin = new Thickness(0);
+    }
 
     private void PanelClose_Click(object sender, RoutedEventArgs e) => ClosePanel();
 

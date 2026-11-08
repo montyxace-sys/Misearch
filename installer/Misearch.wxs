@@ -1,0 +1,59 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="Misearch"
+    Manufacturer="MSoft"
+    Version="0.1.2"
+    UpgradeCode="5705A358-F769-4C6F-B1BD-911743EFF6A4"
+    Scope="perUser"
+    Compressed="yes"
+    InstallerVersion="500">
+
+    <MajorUpgrade DowngradeErrorMessage="Ya hay una version mas reciente de Misearch instalada." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="MisearchIcon" SourceFile="$(var.IconFile)" />
+    <Property Id="ARPPRODUCTICON" Value="MisearchIcon" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="ARPNOREPAIR" Value="1" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Misearch">
+          <Directory Id="AssetsFolder" Name="Assets" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="AppProgramMenuDir" Name="Misearch" />
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="Misearch" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+
+    <ComponentGroup Id="AppFiles">
+      <Component Id="MainExecutable" Directory="INSTALLFOLDER" Guid="E8F832CD-34EA-4C8E-9823-46D3D85902B0">
+        <File Id="MisearchExe" Source="$(var.SourceDir)\Misearch.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="AssetsFiles" Directory="AssetsFolder" Guid="FF611BB9-C046-462F-802B-8C55EA551369">
+        <File Id="NewTabHtml" Source="$(var.SourceDir)\Assets\newtab.html" />
+        <File Id="BrandPng" Source="$(var.SourceDir)\Assets\brand.png" />
+        <File Id="Misearch256Png" Source="$(var.SourceDir)\Assets\misearch-256.png" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <Component Id="StartMenuShortcut" Directory="AppProgramMenuDir" Guid="CE7AFF9D-C348-4C15-AE92-9AD1B5538C4D">
+      <Shortcut
+        Id="AppShortcut"
+        Name="Misearch"
+        Description="Navegador Misearch"
+        Target="[INSTALLFOLDER]Misearch.exe"
+        WorkingDirectory="INSTALLFOLDER"
+        Icon="MisearchIcon" />
+      <RemoveFolder Id="RemoveAppProgramMenuDir" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\MSoft\Misearch" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+  </Package>
+</Wix>
