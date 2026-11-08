@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nueva pestaña — Misearch</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --surface: #0e1523;
+    --border: #1f2a3d;
+    --text: #e8ecf4;
+    --muted: #8c97ac;
+    --accent: #ff8a00;
+    --accent2: #ff5a00;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background:
+      radial-gradient(1100px 520px at 50% -140px, rgba(255,122,0,.18), transparent 60%),
+      radial-gradient(800px 420px at 100% 110%, rgba(255,90,0,.09), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .wrap { width: min(720px, calc(100% - 48px)); text-align: center; margin-top: -40px; }
+  .mark {
+    display: block;
+    width: 84px; height: 84px; margin: 0 auto 22px;
+    border-radius: 24px;
+    box-shadow: 0 18px 50px rgba(255,106,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  h1 {
+    font-size: 34px; line-height: 1.15; margin: 0 0 10px;
+    font-weight: 700; letter-spacing: -.7px;
+  }
+  h1 span {
+    background: linear-gradient(90deg, #ffb066, #ff6a00);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { color: var(--muted); font-size: 14.5px; margin: 0 0 30px; }
+  form { position: relative; }
+  .search {
+    width: 100%; height: 58px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: rgba(14,21,35,.92);
+    display: flex; align-items: center;
+    padding: 0 16px;
+    box-shadow: 0 10px 34px rgba(0,0,0,.35);
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  .search:focus-within {
+    border-color: #b85c1c;
+    box-shadow: 0 0 0 4px rgba(255,122,0,.16), 0 10px 34px rgba(0,0,0,.35);
+  }
+  .search svg { width: 19px; height: 19px; flex: none; color: var(--muted); }
+  input {
+    flex: 1; height: 100%; min-width: 0;
+    background: transparent; border: 0; outline: 0;
+    color: var(--text); font-size: 16px;
+    padding: 0 12px;
+    font-family: inherit;
+  }
+  input::placeholder { color: #5b667a; }
+  .go {
+    flex: none; border: 0; cursor: pointer;
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; display: grid; place-items: center;
+  }
+  .go svg { width: 16px; height: 16px; color: #fff; }
+  .engine {
+    margin: 12px 0 0; font-size: 12px; color: var(--muted);
+  }
+  .engine b { color: #ffb27a; font-weight: 600; }
+  .links {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    gap: 10px; margin-top: 34px;
+  }
+  .link {
+    display: inline-flex; align-items: center; gap: 9px;
+    color: var(--text); text-decoration: none;
+    background: rgba(20,29,46,.72);
+    border: 1px solid var(--border);
+    border-radius: 11px; padding: 10px 14px;
+    font-size: 12.5px;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .link:hover { transform: translateY(-1px); border-color: #b85c1c; background: #141d2e; }
+  .dot { width: 8px; height: 8px; border-radius: 3px; background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+  .foot { margin-top: 46px; color: #55617a; font-size: 11.5px; letter-spacing: .2px; }
+  .badges { display: flex; justify-content: center; gap: 18px; margin-top: 10px; color: #63708a; font-size: 11px; }
+  .badges span { display: inline-flex; align-items: center; gap: 6px; }
+  .badges i { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="mark" src="misearch-256.png" width="84" height="84" alt="" aria-hidden="true">
+
+  <h1>Navega sin <span>dejar rastro</span></h1>
+  <p class="sub">Rastreadores bloqueados, conexión cifrada y una VPN que puedes encender cuando quieras.</p>
+
+  <form id="form" autocomplete="off">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+      </svg>
+      <input id="q" type="text" placeholder="Busca o escribe una dirección" autofocus spellcheck="false">
+      <button class="go" type="submit" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"></path>
+        </svg>
+      </button>
+    </div>
+  </form>
+
+  <p class="engine">Buscar en <b id="engine">DuckDuckGo</b> · pulsa <b>/</b> para escribir</p>
+
+  <div class="links">
+    <a class="link" href="#" data-url="https://msoft.com.es"><span class="dot"></span> MSoft</a>
+    <a class="link" href="#" data-url="https://github.com/montyxace-sys/Mconect"><span class="dot"></span> Mconect</a>
+    <a class="link" href="#" data-url="https://github.com/montyxace-sys"><span class="dot"></span> GitHub MSoft</a>
+    <a class="link" href="#" data-url="https://github.com/montyxace-sys/Mconect/releases"><span class="dot"></span> Descargas</a>
+  </div>
+
+  <div class="badges">
+    <span><i></i> Bloqueo de rastreadores</span>
+    <span><i></i> DNS cifrado con la VPN</span>
+    <span><i></i> Sin cuentas</span>
+  </div>
+
+  <p class="foot">Misearch 0.1 · MSoft · software libre para Windows</p>
+</div>
+
+<script>
+  const form = document.getElementById('form');
+  const input = document.getElementById('q');
+
+  function post(message) {
+    if (window.chrome && window.chrome.webview) {
+      window.chrome.webview.postMessage(message);
+    }
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const value = input.value.trim();
+    if (value) post({ type: 'search', q: value });
+  });
+
+  document.querySelectorAll('.link[data-url]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      post({ type: 'navigate', url: link.dataset.url });
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === '/' && document.activeElement !== input) {
+      event.preventDefault();
+      input.focus();
+    }
+  });
+
+  window.misearchSetEngine = (name) => {
+    document.getElementById('engine').textContent = name;
+    input.placeholder = 'Busca en ' + name + ' o escribe una dirección';
+  };
+</script>
+</body>
+</html>

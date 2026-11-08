@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/App/">
+    <Project Path="App/Misearch.App.csproj" />
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="Core/Misearch.Core.csproj" />
+  </Folder>
+</Solution>
