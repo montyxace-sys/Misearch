@@ -147,9 +147,21 @@ public sealed class HistoryStore
         }
     }
 
-    private void SaveHistory() =>
-        File.WriteAllText(AppPaths.HistoryFile, JsonSerializer.Serialize(_history));
+    // A failed write (locked file, missing folder, full disk) must never tear down the UI
+    // thread through an async void handler: the in-memory lists stay authoritative.
+    private void SaveHistory() => TryWrite(AppPaths.HistoryFile, _history);
 
-    private void SaveBookmarks() =>
-        File.WriteAllText(AppPaths.BookmarksFile, JsonSerializer.Serialize(_bookmarks));
+    private void SaveBookmarks() => TryWrite(AppPaths.BookmarksFile, _bookmarks);
+
+    private static void TryWrite(string path, object value)
+    {
+        try
+        {
+            AppPaths.EnsureDirectories();
+            File.WriteAllText(path, JsonSerializer.Serialize(value));
+        }
+        catch (Exception)
+        {
+        }
+    }
 }

@@ -5,4 +5,7 @@
   <Folder Name="/Core/">
     <Project Path="Core/Misearch.Core.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Misearch.CoreTests/Misearch.CoreTests.csproj" />
+  </Folder>
 </Solution>

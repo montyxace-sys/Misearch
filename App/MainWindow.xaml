@@ -109,6 +109,8 @@
                             <TextBlock x:Name="VpnPillText" Text="VPN" FontSize="11.5" Margin="7,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
+                    <Button x:Name="AiButton" Style="{StaticResource IconButton}" Content="&#xE99A;"
+                            Click="AiButton_Click" ToolTip="Asistente IA (resumir y explicar)" AutomationProperties.Name="Asistente IA" />
                     <Button x:Name="ShieldButton" Style="{StaticResource IconButton}" Content="&#xEA18;"
                             Click="Shield_Click" ToolTip="Privacidad y bloqueos" />
                     <Button Style="{StaticResource IconButton}" Content="&#xE749;" Click="Print_Click" ToolTip="Imprimir (Ctrl+P)" AutomationProperties.Name="Imprimir" />
@@ -202,6 +204,12 @@
 
                                 <StackPanel Margin="0,8,0,6">
                                     <TextBlock Text="SEGURIDAD" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
+                                    <Button Style="{StaticResource SecondaryButton}" Margin="0,0,0,6" HorizontalContentAlignment="Left" Click="AiButton_Click" AutomationProperties.Name="Asistente IA">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
+                                            <TextBlock Text="Asistente IA" Margin="10,0,0,0" />
+                                        </StackPanel>
+                                    </Button>
                                     <Button Style="{StaticResource SecondaryButton}" Margin="0,0,0,6" HorizontalContentAlignment="Left" Click="OpenVpn_Click">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="&#xEA18;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
@@ -245,6 +253,38 @@
                                 <CheckBox x:Name="ClearExitCheck" Style="{StaticResource DarkCheck}" Content="Borrar datos al cerrar" Margin="0,0,0,12" Checked="Setting_Changed" Unchecked="Setting_Changed" />
                                 <CheckBox x:Name="HttpsFirstCheck" Style="{StaticResource DarkCheck}" Content="Intentar HTTPS primero" Margin="0,0,0,12" Checked="Setting_Changed" Unchecked="Setting_Changed" />
                                 <TextBlock x:Name="PrivateHint" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,0,0,14" />
+
+                                <TextBlock Text="ASISTENTE IA" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" Margin="2,4,0,10" />
+                                <CheckBox x:Name="AiEnabledCheck" Style="{StaticResource DarkCheck}" Content="Activar el asistente IA" Margin="0,0,0,10" Checked="AiSettings_Changed" Unchecked="AiSettings_Changed" />
+                                <WrapPanel x:Name="AiProviderChips" Margin="0,0,0,8">
+                                    <Button Style="{StaticResource Chip}" Tag="Groq" Content="Groq" Click="AiProvider_Click" />
+                                    <Button Style="{StaticResource Chip}" Tag="OpenRouter" Content="OpenRouter" Click="AiProvider_Click" />
+                                    <Button Style="{StaticResource Chip}" Tag="Ollama" Content="Ollama local" Click="AiProvider_Click" />
+                                    <Button Style="{StaticResource Chip}" Tag="OpenAiCompatible" Content="Otro" Click="AiProvider_Click" />
+                                </WrapPanel>
+
+                                <Grid Margin="0,0,0,8">
+                                    <TextBox x:Name="AiModelBox" Style="{StaticResource FlatTextBox}" Height="32"
+                                             Background="{StaticResource Surface2Brush}" Padding="10,0" LostFocus="AiModel_LostFocus" />
+                                    <TextBlock x:Name="AiModelPlaceholder" Text="Modelo (vacío = el del proveedor)"
+                                               FontSize="12" Foreground="#5B667A" Margin="11,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False" />
+                                </Grid>
+                                <TextBox x:Name="AiBaseUrlBox" Style="{StaticResource FlatTextBox}" Height="32" Margin="0,0,0,8"
+                                         Background="{StaticResource Surface2Brush}" Padding="10,0" LostFocus="AiBaseUrl_LostFocus"
+                                         ToolTip="Dirección base del proveedor. Vacío = la del proveedor elegido." />
+                                <Grid Margin="0,0,0,6">
+                                    <PasswordBox x:Name="AiKeyBox" Height="32" Padding="10,0" BorderThickness="1"
+                                                 Background="{StaticResource Surface2Brush}" Foreground="{StaticResource TextBrush}"
+                                                 BorderBrush="{StaticResource BorderBrush2}" FontSize="12.5"
+                                                 ToolTip="Pega aquí la clave del proveedor. Se guarda cifrada." />
+                                </Grid>
+                                <Button x:Name="AiSaveKeyButton" Style="{StaticResource SecondaryButton}" HorizontalContentAlignment="Left" Margin="0,0,0,8" Click="AiSaveKey_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
+                                        <TextBlock Text="Guardar la clave (cifrada)" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                </Button>
+                                <TextBlock x:Name="AiKeyStateText" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="2,0,0,14" />
 
                                 <Button Style="{StaticResource SecondaryButton}" HorizontalContentAlignment="Left" Click="ClearData_Click" Margin="0,0,0,6">
                                     <StackPanel Orientation="Horizontal">
@@ -304,6 +344,52 @@
                                 <TextBlock Margin="2,8,0,0" FontSize="11.5" Foreground="{StaticResource AccentBrush}" Cursor="Hand"
                                            Text="Motor Mihomo · código abierto (GPL-3.0)"
                                            MouseLeftButtonUp="OpenMihomoSource_Click" />
+                            </StackPanel>
+
+                            <!-- Asistente IA -->
+                            <StackPanel x:Name="PanelAi" Visibility="Collapsed">
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Ellipse x:Name="AiStateDot" Width="9" Height="9" Fill="{StaticResource AccentBrush}" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AiProviderText" Text="Groq" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <TextBlock x:Name="AiKeyHint" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,7,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Button x:Name="AiSummarizeButton" Style="{StaticResource PrimaryButton}" Content="Resumir esta página" Margin="0,0,0,6" Click="AiSummarize_Click" />
+                                <Button x:Name="AiExplainButton" Style="{StaticResource SecondaryButton}" Content="Explicar la selección" Margin="0,0,0,6" Click="AiExplain_Click" />
+                                <Button x:Name="AiTranslateButton" Style="{StaticResource SecondaryButton}" Content="Traducir al español" Margin="0,0,0,12" Click="AiTranslate_Click" />
+
+                                <TextBlock Text="RESPUESTA" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
+                                <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+                                    <RichTextBox x:Name="AiOutput" Background="Transparent" BorderThickness="0" IsReadOnly="True"
+                                                 Foreground="{StaticResource TextBrush}" FontFamily="Segoe UI" FontSize="12.5"
+                                                 Padding="0" MinHeight="140" VerticalScrollBarVisibility="Auto" />
+                                </Border>
+
+                                <Button x:Name="AiTestButton" Style="{StaticResource SecondaryButton}" HorizontalContentAlignment="Left" Margin="0,0,0,6" Click="AiTest_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
+                                        <TextBlock Text="Probar la conexión" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Style="{StaticResource SecondaryButton}" HorizontalContentAlignment="Left" Margin="0,0,0,6" Click="CopyAiOutput_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE8C8;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
+                                        <TextBlock Text="Copiar la respuesta" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Style="{StaticResource SecondaryButton}" HorizontalContentAlignment="Left" Click="OpenSettings_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="13" />
+                                        <TextBlock Text="Configurar la IA" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                </Button>
+
+                                <TextBlock Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="2,12,0,0"
+                                           Text="La IA es opcional y funciona con tu propia clave. Solo se envía el texto de la página cuando pulsas un botón; ni historial ni marcadores salen del equipo." />
                             </StackPanel>
 
                             <!-- Historial -->
