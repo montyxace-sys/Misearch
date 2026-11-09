@@ -2,6 +2,14 @@ using System.Net;
 
 namespace Misearch.Core.Ai;
 
+/// <summary>What the assistant is asked to do; it decides which model is used.</summary>
+public enum AiTask
+{
+    Summarize,
+    Explain,
+    Translate
+}
+
 public enum AiProviderKind
 {
     Groq,
@@ -10,7 +18,12 @@ public enum AiProviderKind
     OpenAiCompatible
 }
 
-public sealed record AiProviderInfo(AiProviderKind Kind, string Name, string BaseUrl, string DefaultModel);
+public sealed record AiProviderInfo(
+    AiProviderKind Kind,
+    string Name,
+    string BaseUrl,
+    string DefaultModel,
+    string PreferredModel = "");
 
 public sealed class AiMessage
 {
@@ -43,6 +56,9 @@ public sealed class AiRequest
 {
     public string BaseUrl { get; init; } = "";
     public string Model { get; init; } = "";
+    /// <summary>Used instead of <see cref="Model"/> for translations, when the provider has one.</summary>
+    public string PreferredModel { get; init; } = "";
+    public AiTask Task { get; init; } = AiTask.Summarize;
     public string ApiKey { get; init; } = "";
     public IReadOnlyList<AiMessage> Messages { get; init; } = Array.Empty<AiMessage>();
     public double Temperature { get; init; } = 0.3;

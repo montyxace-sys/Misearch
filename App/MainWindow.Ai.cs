@@ -54,7 +54,11 @@ public partial class MainWindow
         var resolver = Ai;
         var usable = resolver.IsUsable;
 
-        AiProviderText.Text = $"{resolver.Provider.Name} · {resolver.Model}";
+        // La traducción va con el modelo más capaz del proveedor, así que el panel lo dice.
+        var translateModel = resolver.TranslationModel;
+        AiProviderText.Text = translateModel == resolver.Model
+            ? $"{resolver.Provider.Name} · {resolver.Model}"
+            : $"{resolver.Provider.Name} · {resolver.Model} (traduce: {translateModel})";
         AiKeyHint.Text = usable
             ? "Listo. El texto de la página se envía al proveedor solo cuando pulsas un botón."
             : resolver.UnavailableReason();
@@ -91,22 +95,15 @@ public partial class MainWindow
     }
 
     private async void AiSummarize_Click(object sender, RoutedEventArgs e) =>
-        await RunAiAsync(AiAction.Summarize);
+        await RunAiAsync(AiTask.Summarize);
 
     private async void AiExplain_Click(object sender, RoutedEventArgs e) =>
-        await RunAiAsync(AiAction.Explain);
+        await RunAiAsync(AiTask.Explain);
 
     private async void AiTranslate_Click(object sender, RoutedEventArgs e) =>
-        await RunAiAsync(AiAction.Translate);
+        await RunAiAsync(AiTask.Translate);
 
-    private enum AiAction
-    {
-        Summarize,
-        Explain,
-        Translate
-    }
-
-    private async Task RunAiAsync(AiAction action)
+    private async Task RunAiAsync(AiTask action)
     {
         if (_aiBusy)
             return;
@@ -137,7 +134,7 @@ public partial class MainWindow
             int maxTokens;
             switch (action)
             {
-                case AiAction.Summarize:
+                case AiTask.Summarize:
                     var text = await ReadPageTextAsync(core);
                     if (string.IsNullOrWhiteSpace(text))
                         throw new AiException("Esta página no tiene texto que resumir.");
@@ -146,7 +143,7 @@ public partial class MainWindow
                     maxTokens = 700;
                     break;
 
-                case AiAction.Explain:
+                case AiTask.Explain:
                     if (string.IsNullOrWhiteSpace(_currentSelection))
                         throw new AiException("Selecciona primero un texto en la página.");
                     prompt = AiPrompts.ExplainPrompt(_currentSelection, title);
@@ -173,7 +170,7 @@ public partial class MainWindow
             {
                 AiMessage.System(system),
                 AiMessage.User(prompt)
-            }, maxTokens: maxTokens);
+            }, maxTokens: maxTokens, task: action);
 
             var result = await _aiClient.CompleteAsync(request);
             SetAiOutput(result.Text);

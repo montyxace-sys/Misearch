@@ -352,7 +352,7 @@
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <Ellipse x:Name="AiStateDot" Width="9" Height="9" Fill="{StaticResource AccentBrush}" VerticalAlignment="Center" />
-                                            <TextBlock x:Name="AiProviderText" Text="Groq" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center" />
+                                            <TextBlock x:Name="AiProviderText" Text="Groq" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <TextBlock x:Name="AiKeyHint" Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,7,0,0" />
                                     </StackPanel>

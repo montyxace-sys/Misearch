@@ -17,8 +17,19 @@ public sealed class AiSettingsResolver
 
     public AiProviderInfo Provider => OpenAiCompatibleClient.Info(_settings.AiProvider);
 
-    public string Model =>
-        string.IsNullOrWhiteSpace(_settings.AiModel) ? Provider.DefaultModel : _settings.AiModel.Trim();
+    /// <summary>The model the user picked, or the provider's default for short tasks.</summary>
+    public string Model => UserModel is { Length: > 0 } chosen ? chosen : Provider.DefaultModel;
+
+    /// <summary>
+    /// The model used for translations: the user's pick, or the provider's stronger default
+    /// when it has one.
+    /// </summary>
+    public string TranslationModel =>
+        UserModel is { Length: > 0 } chosen ? chosen
+        : string.IsNullOrWhiteSpace(Provider.PreferredModel) ? Provider.DefaultModel
+        : Provider.PreferredModel;
+
+    private string UserModel => _settings.AiModel.Trim();
 
     public string ApiKey => AiKeyStore.Unprotect(_settings.AiApiKeyProtected);
 
@@ -46,10 +57,13 @@ public sealed class AiSettingsResolver
         return "";
     }
 
-    public AiRequest BuildRequest(IReadOnlyList<AiMessage> messages, int maxTokens = 800) => new()
+    public AiRequest BuildRequest(IReadOnlyList<AiMessage> messages, int maxTokens = 800,
+        AiTask task = AiTask.Summarize) => new()
     {
         BaseUrl = BaseUrl,
         Model = Model,
+        PreferredModel = TranslationModel,
+        Task = task,
         ApiKey = ApiKey,
         Messages = messages,
         MaxTokens = maxTokens

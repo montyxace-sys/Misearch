@@ -46,7 +46,8 @@ La IA está **desactivada por defecto** y no hay ninguna clave de MSoft implicad
 - Proveedores: **Groq** (gratis, sin tarjeta), **OpenRouter**, **Ollama** en local (sin clave) o cualquier servidor compatible con OpenAI.
 - La clave se cifra con DPAPI (`%AppData%\Misearch\settings.json`) y nunca se muestra completa en pantalla.
 - Solo se envía el texto de la página o la selección cuando pulsas un botón: ni historial, ni marcadores, ni direcciones salen del equipo.
-- El texto se recorta antes de enviarlo (12 000 caracteres en los resúmenes) para no agotar los límites gratuitos.
+- El texto se recorta antes de enviarlo (12 000 caracteres en los resúmenes, 6 000 en traducciones) para no agotar los límites gratuitos.
+- Las traducciones usan el modelo más capaz del proveedor (en Groq, `llama-3.3-70b-versatile`) aunque elijas uno pequeño para lo demás: el modelo pequeño se salta líneas y mezcla idiomas en textos largos. Si eliges un modelo a mano, se respeta tu elección.
 
 ## Privacidad y seguridad
 

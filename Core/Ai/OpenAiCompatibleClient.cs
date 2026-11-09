@@ -16,7 +16,7 @@ public sealed class OpenAiCompatibleClient : IAiClient
     public static IReadOnlyList<AiProviderInfo> Providers { get; } = new[]
     {
         new AiProviderInfo(AiProviderKind.Groq, "Groq",
-            "https://api.groq.com/openai/v1", "llama-3.1-8b-instant"),
+            "https://api.groq.com/openai/v1", "llama-3.1-8b-instant", "llama-3.3-70b-versatile"),
         new AiProviderInfo(AiProviderKind.OpenRouter, "OpenRouter",
             "https://openrouter.ai/api/v1", "meta-llama/llama-3.1-8b-instruct:free"),
         new AiProviderInfo(AiProviderKind.Ollama, "Ollama (local)",
@@ -53,7 +53,7 @@ public sealed class OpenAiCompatibleClient : IAiClient
 
         var body = new JsonObject
         {
-            ["model"] = request.Model,
+            ["model"] = EffectiveModel(request),
             ["messages"] = messages,
             ["temperature"] = request.Temperature,
             ["max_tokens"] = request.MaxTokens,
@@ -61,6 +61,15 @@ public sealed class OpenAiCompatibleClient : IAiClient
         };
         return body.ToJsonString();
     }
+
+    /// <summary>
+    /// The model actually asked for: translations get the provider's better model when it
+    /// has one, because the small default drops lines and mixes languages on long pages.
+    /// </summary>
+    public static string EffectiveModel(AiRequest request) =>
+        request.Task == AiTask.Translate && !string.IsNullOrWhiteSpace(request.PreferredModel)
+            ? request.PreferredModel
+            : request.Model;
 
     /// <summary>Reads <c>choices[0].message.content</c> out of a chat-completions reply.</summary>
     public static AiResult ParseResponse(string json)
