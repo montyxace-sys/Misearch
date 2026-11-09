@@ -47,6 +47,28 @@ public sealed class AiPromptsTests
     }
 
     [Fact]
+    public void The_translate_prompt_asks_for_the_text_only()
+    {
+        var prompt = AiPrompts.TranslatePrompt("Hello, world");
+
+        Assert.Contains("Hello, world", prompt);
+        Assert.Contains("español", prompt);
+        Assert.Contains("solo la traducción", prompt);
+    }
+
+    [Fact]
+    public void A_long_selection_is_trimmed_before_translating()
+    {
+        var text = string.Join(" ", Enumerable.Repeat("palabra", 4000));
+
+        var prompt = AiPrompts.TranslatePrompt(text);
+
+        // 6 000 characters of text plus the instructions around it, never the whole 32 000.
+        Assert.True(prompt.Length < AiPrompts.MaxTranslateChars + 400, $"prompt de {prompt.Length} caracteres");
+        Assert.Contains("[…]", prompt);
+    }
+
+    [Fact]
     public void The_explain_prompt_carries_the_selection()
     {
         var prompt = AiPrompts.ExplainPrompt("texto seleccionado por el usuario", "Una página");

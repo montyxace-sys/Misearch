@@ -16,6 +16,15 @@ public static class AiPrompts
         "plano sin markdown, con frases cortas. Resumes páginas web para su lector sin " +
         "inventar nada que no aparezca en el texto que recibes.";
 
+    public const string TranslateSystem =
+        "Eres un traductor dentro del navegador Misearch. Traduces al español el texto que " +
+        "recibes, manteniendo el significado, el tono y el formato (listas, enlaces, " +
+        "números). No explicas la traducción, no añades comentarios y no inventas nada: " +
+        "devuelves solo el texto traducido.";
+
+    /// <summary>Longest selection sent to the translator, well inside a free request.</summary>
+    public const int MaxTranslateChars = 6000;
+
     public const string ExplainSystem =
         "Eres un asistente dentro del navegador Misearch. Respondes en español, en texto " +
         "plano y en pocas líneas, explicando lo que el usuario seleccionó con sus propias " +
@@ -69,6 +78,18 @@ public static class AiPrompts
             3. Una última línea que empiece por "Aviso:" si detectas algo sospechoso
                (pide datos personales, pagos, descargas, urgencia) o "Aviso: nada
                destacable" si no.
+            """;
+    }
+
+    public static string TranslatePrompt(string text, string targetLanguage = "español")
+    {
+        var trimmed = TrimPageText(text, MaxTranslateChars);
+        return $"""
+            Traduce al {targetLanguage} el siguiente texto. Devuelve solo la traducción.
+
+            ---
+            {trimmed}
+            ---
             """;
     }
 

@@ -359,7 +359,8 @@
                                 </Border>
 
                                 <Button x:Name="AiSummarizeButton" Style="{StaticResource PrimaryButton}" Content="Resumir esta página" Margin="0,0,0,6" Click="AiSummarize_Click" />
-                                <Button x:Name="AiExplainButton" Style="{StaticResource SecondaryButton}" Content="Explicar la selección" Margin="0,0,0,12" Click="AiExplain_Click" />
+                                <Button x:Name="AiExplainButton" Style="{StaticResource SecondaryButton}" Content="Explicar la selección" Margin="0,0,0,6" Click="AiExplain_Click" />
+                                <Button x:Name="AiTranslateButton" Style="{StaticResource SecondaryButton}" Content="Traducir al español" Margin="0,0,0,12" Click="AiTranslate_Click" />
 
                                 <TextBlock Text="RESPUESTA" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource MutedBrush}" Margin="2,0,0,8" />
                                 <Border Style="{StaticResource Card}" Margin="0,0,0,10">

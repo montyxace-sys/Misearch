@@ -67,6 +67,10 @@ public partial class MainWindow
         AiExplainButton.Content = _currentSelection.Length > 0
             ? "Explicar la selección"
             : "Explicar la selección (nada seleccionado)";
+        AiTranslateButton.IsEnabled = usable && !_aiBusy;
+        AiTranslateButton.Content = _currentSelection.Length > 0
+            ? "Traducir al español"
+            : "Traducir la página al español";
 
         if (!_aiBusy && AiOutput.Document.Blocks.Count == 0)
             SetAiOutput(usable
@@ -87,12 +91,22 @@ public partial class MainWindow
     }
 
     private async void AiSummarize_Click(object sender, RoutedEventArgs e) =>
-        await RunAiAsync(summarize: true);
+        await RunAiAsync(AiAction.Summarize);
 
     private async void AiExplain_Click(object sender, RoutedEventArgs e) =>
-        await RunAiAsync(summarize: false);
+        await RunAiAsync(AiAction.Explain);
 
-    private async Task RunAiAsync(bool summarize)
+    private async void AiTranslate_Click(object sender, RoutedEventArgs e) =>
+        await RunAiAsync(AiAction.Translate);
+
+    private enum AiAction
+    {
+        Summarize,
+        Explain,
+        Translate
+    }
+
+    private async Task RunAiAsync(AiAction action)
     {
         if (_aiBusy)
             return;
@@ -119,26 +133,47 @@ public partial class MainWindow
         {
             var title = _activeTab?.Title ?? "";
             string prompt;
-            if (summarize)
+            string system;
+            int maxTokens;
+            switch (action)
             {
-                var text = await ReadPageTextAsync(core);
-                if (string.IsNullOrWhiteSpace(text))
-                    throw new AiException("Esta página no tiene texto que resumir.");
-                prompt = AiPrompts.SummaryPrompt(title, _activeTab?.Url ?? "", text);
-            }
-            else
-            {
-                if (string.IsNullOrWhiteSpace(_currentSelection))
-                    throw new AiException("Selecciona primero un texto en la página.");
-                prompt = AiPrompts.ExplainPrompt(_currentSelection, title);
+                case AiAction.Summarize:
+                    var text = await ReadPageTextAsync(core);
+                    if (string.IsNullOrWhiteSpace(text))
+                        throw new AiException("Esta página no tiene texto que resumir.");
+                    prompt = AiPrompts.SummaryPrompt(title, _activeTab?.Url ?? "", text);
+                    system = AiPrompts.SummarySystem;
+                    maxTokens = 700;
+                    break;
+
+                case AiAction.Explain:
+                    if (string.IsNullOrWhiteSpace(_currentSelection))
+                        throw new AiException("Selecciona primero un texto en la página.");
+                    prompt = AiPrompts.ExplainPrompt(_currentSelection, title);
+                    system = AiPrompts.ExplainSystem;
+                    maxTokens = 400;
+                    break;
+
+                default:
+                    // A selection is translated on its own; without one, the whole page.
+                    var source = _currentSelection;
+                    if (string.IsNullOrWhiteSpace(source))
+                    {
+                        source = await ReadPageTextAsync(core);
+                        if (string.IsNullOrWhiteSpace(source))
+                            throw new AiException("Esta página no tiene texto que traducir.");
+                    }
+                    prompt = AiPrompts.TranslatePrompt(source);
+                    system = AiPrompts.TranslateSystem;
+                    maxTokens = 1200;
+                    break;
             }
 
-            var system = summarize ? AiPrompts.SummarySystem : AiPrompts.ExplainSystem;
             var request = resolver.BuildRequest(new[]
             {
                 AiMessage.System(system),
                 AiMessage.User(prompt)
-            }, maxTokens: summarize ? 700 : 400);
+            }, maxTokens: maxTokens);
 
             var result = await _aiClient.CompleteAsync(request);
             SetAiOutput(result.Text);

@@ -28,7 +28,7 @@ El ZIP contiene `Misearch.exe` (autocontenido, no necesita .NET instalado) y la 
 - Permisos denegados por defecto: cámara, micrófono, ubicación y notificaciones.
 - VPN WireGuard o perfil Clash importable, aplicada únicamente al navegador mediante el core [Mihomo](https://github.com/MetaCubeX/mihomo).
 - VPN rápida **WARP (Cloudflare)** con un clic: si no hay perfil, se crea uno gratuito automáticamente al activar.
-- **Asistente IA opcional**: resume la página abierta o explica el texto seleccionado con **tu propia clave** de Groq (gratis), OpenRouter u Ollama local. La clave se guarda cifrada con DPAPI y solo se envía el texto cuando pulsas un botón.
+- **Asistente IA opcional**: resume la página abierta, explica el texto seleccionado o lo **traduce al español** con **tu propia clave** de Groq (gratis), OpenRouter u Ollama local. La clave se guarda cifrada con DPAPI y solo se envía el texto cuando pulsas un botón.
 - Atajos de teclado: `Ctrl+T`, `Ctrl+W`, `Ctrl+L`, `Ctrl+O`, `Ctrl+P`, `Ctrl+R`, `Ctrl+Shift+Supr`, `Ctrl++`, `Ctrl+-`, `Ctrl+0`, `Alt+←`, `Alt+→`.
 - Interfaz oscura con acento naranja y zoom por pestaña.
 
