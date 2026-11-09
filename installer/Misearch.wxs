@@ -37,9 +37,16 @@
       <Component Id="MainExecutable" Directory="INSTALLFOLDER" Guid="E8F832CD-34EA-4C8E-9823-46D3D85902B0">
         <File Id="MisearchExe" Source="$(var.SourceDir)\Misearch.exe" KeyPath="yes" />
       </Component>
-      <Component Id="AssetsFiles" Directory="AssetsFolder" Guid="FF611BB9-C046-462F-802B-8C55EA551369">
-        <File Id="NewTabHtml" Source="$(var.SourceDir)\Assets\newtab.html" />
-        <File Id="BrandPng" Source="$(var.SourceDir)\Assets\brand.png" />
+      <!-- Un Component por archivo: con varios File en uno solo, Windows Installer
+           toma uno como KeyPath y los demás pueden quedar a 0 bytes al instalarse
+           (nos pasó con newtab.html, que dejaba la pestaña nueva en blanco). -->
+      <Component Id="NewTabComponent" Directory="AssetsFolder" Guid="A1B2C3D4-1111-4A2B-9C3D-000000000001">
+        <File Id="NewTabHtml" Source="$(var.SourceDir)\Assets\newtab.html" KeyPath="yes" />
+      </Component>
+      <Component Id="BrandComponent" Directory="AssetsFolder" Guid="A1B2C3D4-1111-4A2B-9C3D-000000000002">
+        <File Id="BrandPng" Source="$(var.SourceDir)\Assets\brand.png" KeyPath="yes" />
+      </Component>
+      <Component Id="Misearch256Component" Directory="AssetsFolder" Guid="A1B2C3D4-1111-4A2B-9C3D-000000000003">
         <File Id="Misearch256Png" Source="$(var.SourceDir)\Assets\misearch-256.png" KeyPath="yes" />
       </Component>
     </ComponentGroup>

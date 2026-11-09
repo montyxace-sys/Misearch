@@ -31,6 +31,39 @@ jobs:
           dotnet publish App/Misearch.App.csproj -c Release -r win-x64 --self-contained true `
             -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 
+      # El instalador embebe el portable publicado arriba: se compila después.
+      - name: Instalar WiX y la extensión del bootstrapper
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.BootstrapperApplications.wixext/5.0.2
+
+      - name: Construir el MSI
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "publish/Misearch.exe")) {
+            throw "Falta publish/Misearch.exe: el paso anterior no genero el ejecutable."
+          }
+          wix build installer/Misearch.wxs -arch x64 `
+            -d SourceDir=publish -d IconFile=App/Assets/misearch.ico `
+            -o publish/Misearch-0.1.2-win-x64.msi
+
+      - name: Construir el Setup (bundle)
+        shell: pwsh
+        run: |
+          wix build installer/MisearchBundle.wxs -arch x64 -ext WixToolset.BootstrapperApplications.wixext `
+            -d IconFile=App/Assets/misearch.ico -d MsiPath=publish/Misearch-0.1.2-win-x64.msi `
+            -o publish/Misearch-0.1.2-win-x64-Setup.exe
+
+      - name: Empaquetar el portable en ZIP
+        shell: pwsh
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "Misearch"
+          New-Item -ItemType Directory -Path $stage -Force | Out-Null
+          Copy-Item publish/Misearch.exe $stage
+          Copy-Item publish/Assets $stage -Recurse
+          Compress-Archive -Path "$stage\*" -DestinationPath publish/Misearch-0.1.2-win-x64.zip -CompressionLevel Optimal
+
       - name: Localizar signtool (opcional)
         id: signtool
         shell: pwsh
@@ -77,7 +110,7 @@ jobs:
       - name: Crear los checksums
         shell: pwsh
         run: |
-          $files = Get-ChildItem .\publish\*.exe, .\publish\*.msi -ErrorAction SilentlyContinue
+          $files = Get-ChildItem .\publish\*.exe, .\publish\*.msi, .\publish\*.zip -ErrorAction SilentlyContinue
           if (-not $files) {
             Write-Host "No hay binarios para calcular checksums."
             exit 0
@@ -92,5 +125,6 @@ jobs:
           files: |
             publish/*.exe
             publish/*.msi
+            publish/*.zip
             publish/SHA256SUMS.txt
           fail_on_unmatched_files: false
