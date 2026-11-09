@@ -1,0 +1,57 @@
+using Xunit;
+
+using Misearch.Core.Ai;
+
+namespace Misearch.CoreTests;
+
+public sealed class AiPromptsTests
+{
+    [Fact]
+    public void Long_pages_are_trimmed_on_a_word_boundary()
+    {
+        var text = string.Join(" ", Enumerable.Repeat("palabra", 5000));
+
+        var trimmed = AiPrompts.TrimPageText(text, 200);
+
+        Assert.True(trimmed.Length <= 220);
+        Assert.EndsWith("[…]", trimmed);
+        Assert.DoesNotContain("palabr[…]", trimmed);
+    }
+
+    [Fact]
+    public void Whitespace_from_scraped_pages_is_collapsed()
+    {
+        var trimmed = AiPrompts.TrimPageText("  hola   mundo \n\n\t otra   línea  ");
+
+        Assert.Equal("hola mundo otra línea", trimmed);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("\n\n")]
+    public void Empty_text_stays_empty(string text)
+    {
+        Assert.Equal("", AiPrompts.TrimPageText(text));
+    }
+
+    [Fact]
+    public void The_summary_prompt_carries_the_title_the_url_and_the_text()
+    {
+        var prompt = AiPrompts.SummaryPrompt("Título de prueba", "https://ejemplo.com/a", "contenido de la página");
+
+        Assert.Contains("Título de prueba", prompt);
+        Assert.Contains("https://ejemplo.com/a", prompt);
+        Assert.Contains("contenido de la página", prompt);
+        Assert.Contains("Aviso:", prompt);
+    }
+
+    [Fact]
+    public void The_explain_prompt_carries_the_selection()
+    {
+        var prompt = AiPrompts.ExplainPrompt("texto seleccionado por el usuario", "Una página");
+
+        Assert.Contains("texto seleccionado por el usuario", prompt);
+        Assert.Contains("Una página", prompt);
+    }
+}

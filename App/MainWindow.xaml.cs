@@ -412,6 +412,10 @@ public partial class MainWindow : Window
                     if (!string.IsNullOrWhiteSpace(target))
                         core.Navigate(target);
                 }
+                else if (type == "selection" && root.TryGetProperty("text", out var sel))
+                {
+                    OnAiSelectionReported(tab, sel.GetString() ?? "");
+                }
                 else if (type == "shortcut" && root.TryGetProperty("combo", out var c))
                 {
                     HandleShortcut(tab, c.GetString() ?? "");
@@ -429,6 +433,7 @@ public partial class MainWindow : Window
         };
 
         _ = core.AddScriptToExecuteOnDocumentCreatedAsync(ShortcutScript);
+        _ = core.AddScriptToExecuteOnDocumentCreatedAsync(SelectionScript);
         tab.View.ZoomFactor = _settings.Zoom;
     }
 

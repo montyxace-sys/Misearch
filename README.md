@@ -28,6 +28,7 @@ El ZIP contiene `Misearch.exe` (autocontenido, no necesita .NET instalado) y la 
 - Permisos denegados por defecto: cámara, micrófono, ubicación y notificaciones.
 - VPN WireGuard o perfil Clash importable, aplicada únicamente al navegador mediante el core [Mihomo](https://github.com/MetaCubeX/mihomo).
 - VPN rápida **WARP (Cloudflare)** con un clic: si no hay perfil, se crea uno gratuito automáticamente al activar.
+- **Asistente IA opcional**: resume la página abierta o explica el texto seleccionado con **tu propia clave** de Groq (gratis), OpenRouter u Ollama local. La clave se guarda cifrada con DPAPI y solo se envía el texto cuando pulsas un botón.
 - Atajos de teclado: `Ctrl+T`, `Ctrl+W`, `Ctrl+L`, `Ctrl+O`, `Ctrl+P`, `Ctrl+R`, `Ctrl+Shift+Supr`, `Ctrl++`, `Ctrl+-`, `Ctrl+0`, `Alt+←`, `Alt+→`.
 - Interfaz oscura con acento naranja y zoom por pestaña.
 
@@ -37,6 +38,15 @@ El ZIP contiene `Misearch.exe` (autocontenido, no necesita .NET instalado) y la 
 2. Escribe una dirección o una búsqueda y pulsa Enter. Las direcciones locales (`localhost`, `192.168.x.x`) se abren por HTTP; el resto, por HTTPS.
 3. Para la VPN, abre el panel **VPN** y pulsa **Activar VPN**. Si no has importado un perfil, se crea uno gratuito WARP (Cloudflare) y se descarga el core Mihomo la primera vez. También puedes importar un `.conf` de WireGuard o un YAML de Clash.
 4. Los paneles de **Privacidad**, **Historial**, **Marcadores**, **Descargas** y **Ajustes** están en la barra superior y en el menú.
+
+### Asistente IA
+
+La IA está **desactivada por defecto** y no hay ninguna clave de MSoft implicada: cada usuario pone la suya en *Ajustes → Asistente IA*.
+
+- Proveedores: **Groq** (gratis, sin tarjeta), **OpenRouter**, **Ollama** en local (sin clave) o cualquier servidor compatible con OpenAI.
+- La clave se cifra con DPAPI (`%AppData%\Misearch\settings.json`) y nunca se muestra completa en pantalla.
+- Solo se envía el texto de la página o la selección cuando pulsas un botón: ni historial, ni marcadores, ni direcciones salen del equipo.
+- El texto se recorta antes de enviarlo (12 000 caracteres en los resúmenes) para no agotar los límites gratuitos.
 
 ## Privacidad y seguridad
 

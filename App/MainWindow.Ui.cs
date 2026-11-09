@@ -20,6 +20,7 @@ public partial class MainWindow
         PanelHistory.Visibility = Visibility.Collapsed;
         PanelBookmarks.Visibility = Visibility.Collapsed;
         PanelDownloads.Visibility = Visibility.Collapsed;
+        PanelAi.Visibility = Visibility.Collapsed;
 
         content.Visibility = Visibility.Visible;
         PanelTitleText.Text = title;
@@ -98,6 +99,8 @@ public partial class MainWindow
         PrivateHint.Text = "El modo privado y el borrado al salir se aplican al reiniciar Misearch.";
         EngineHint.Text = $"Las búsquedas se envían a {SearchRouter.EngineName(_settings.SearchEngine)}.";
         UpdateEngineChips();
+        ApplyAiSettingsToUi();
+        UpdateAiUi();
     }
 
     private void UpdateEngineChips()
