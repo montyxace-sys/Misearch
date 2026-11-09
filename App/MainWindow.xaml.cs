@@ -28,6 +28,8 @@ public partial class MainWindow : Window
     private readonly List<TabItem> _tabs = new();
     private readonly Dictionary<string, string> _httpsAttempts = new(StringComparer.OrdinalIgnoreCase);
 
+    // Always the very instance SettingsStore holds: mutating a copy meant every change
+    // (engine, zoom, switches) was silently dropped when the app was closed.
     private AppSettings _settings = new();
     private CoreWebView2Environment? _environment;
     private TabItem? _activeTab;
@@ -82,6 +84,7 @@ public partial class MainWindow : Window
     private async void OnWindowLoaded(object sender, RoutedEventArgs e)
     {
         _settings = _settingsStore.Load();
+        _settingsStore.Settings = _settings;
         _historyStore.Load();
         _blocklist.Load();
         LoadBrandImage();

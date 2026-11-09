@@ -48,7 +48,7 @@ public static class WarpService
         var json = await response.Content.ReadAsStringAsync(ct);
         if (!response.IsSuccessStatusCode)
             throw new InvalidOperationException(
-                $"Cloudflare WARP rechazó el registro ({(int)response.StatusCode}): {json[..Math.Min(json.Length, 180)]}");
+                $"Cloudflare WARP rechazó el registro ({(int)response.StatusCode}): {Truncate(json, 180)}");
 
         using var doc = JsonDocument.Parse(json);
         var config = doc.RootElement.GetProperty("config");
@@ -66,12 +66,11 @@ public static class WarpService
         }
 
         var reserved = new int[3];
-        if (config.TryGetProperty("client_id", out var clientId) &&
-            !string.IsNullOrWhiteSpace(clientId.GetString()))
+        if (TryGetClientId(config, doc.RootElement) is { } clientId)
         {
             try
             {
-                var bytes = Convert.FromBase64String(clientId.GetString()!);
+                var bytes = Convert.FromBase64String(clientId);
                 for (var i = 0; i < 3 && i < bytes.Length; i++)
                     reserved[i] = bytes[i];
             }
@@ -90,5 +89,25 @@ public static class WarpService
             EndpointPort = port,
             Reserved = reserved
         };
+    }
+
+    private static string Truncate(string value, int max) =>
+        string.IsNullOrEmpty(value) || value.Length <= max ? value : value[..max];
+
+    /// <summary>
+    /// WARP sends <c>client_id</c> at the root of the registration response (the same place
+    /// wgcf reads it from); older payloads nested it under <c>config</c>. Both are accepted.
+    /// </summary>
+    public static string? TryGetClientId(JsonElement config, JsonElement root)
+    {
+        foreach (var candidate in new[] { root, config })
+        {
+            if (candidate.ValueKind == JsonValueKind.Object &&
+                candidate.TryGetProperty("client_id", out var node) &&
+                node.ValueKind == JsonValueKind.String &&
+                !string.IsNullOrWhiteSpace(node.GetString()))
+                return node.GetString();
+        }
+        return null;
     }
 }
