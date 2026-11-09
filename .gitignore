@@ -3,4 +3,6 @@ obj/
 publish/
 captures/
 .vs/
+tests/*/bin/
+tests/*/obj/
 *.user

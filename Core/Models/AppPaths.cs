@@ -33,6 +33,7 @@ namespace Misearch.Core.Models
             Directory.CreateDirectory(RoamingRoot);
             Directory.CreateDirectory(LocalRoot);
             Directory.CreateDirectory(BrowserData);
+            Directory.CreateDirectory(CoreDir);
             Directory.CreateDirectory(VpnDir);
         }
     }

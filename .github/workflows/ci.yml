@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'fix/**'
+      - 'feat/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Compilar y probar
+    runs-on: windows-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar
+        run: dotnet restore Misearch.slnx
+
+      - name: Compilar
+        run: dotnet build Misearch.slnx --no-restore -c Release --warnaserror
+
+      - name: Probar
+        run: dotnet test tests/Misearch.CoreTests/Misearch.CoreTests.csproj --no-build -c Release --logger "trx;LogFileName=resultados.trx" --results-directory TestResults
+
+      - name: Publicar los resultados de las pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-pruebas
+          path: TestResults
+          if-no-files-found: ignore

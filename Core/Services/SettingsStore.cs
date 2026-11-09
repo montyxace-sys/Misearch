@@ -12,16 +12,35 @@ public sealed class SettingsStore
         Converters = { new JsonStringEnumConverter() }
     };
 
-    public AppSettings Settings { get; private set; } = new();
+    private readonly Func<string> _path;
+
+    public SettingsStore() : this(() => AppPaths.SettingsFile)
+    {
+    }
+
+    /// <summary>Lets tests point the store at a temporary file.</summary>
+    public SettingsStore(Func<string> pathProvider)
+    {
+        _path = pathProvider;
+    }
+
+    /// <summary>
+    /// The live settings object. <see cref="Save"/> serialises this instance, so callers
+    /// must keep mutating the object returned by <see cref="Load"/> (or assign a new one
+    /// here) instead of holding a copy of their own.
+    /// </summary>
+    public AppSettings Settings { get; set; } = new();
+
+    private string Path => _path();
 
     public AppSettings Load()
     {
         AppPaths.EnsureDirectories();
         try
         {
-            if (File.Exists(AppPaths.SettingsFile))
+            if (File.Exists(Path))
             {
-                var json = File.ReadAllText(AppPaths.SettingsFile);
+                var json = File.ReadAllText(Path);
                 Settings = JsonSerializer.Deserialize<AppSettings>(json, Options) ?? new AppSettings();
             }
         }
@@ -39,6 +58,6 @@ public sealed class SettingsStore
     public void Save()
     {
         AppPaths.EnsureDirectories();
-        File.WriteAllText(AppPaths.SettingsFile, JsonSerializer.Serialize(Settings, Options));
+        File.WriteAllText(Path, JsonSerializer.Serialize(Settings, Options));
     }
 }
