@@ -16,7 +16,7 @@ public sealed class OpenAiCompatibleClient : IAiClient
     public static IReadOnlyList<AiProviderInfo> Providers { get; } = new[]
     {
         new AiProviderInfo(AiProviderKind.Groq, "Groq",
-            "https://api.groq.com/openai/v1", "llama-3.1-8b-instant", "llama-3.3-70b-versatile"),
+            "https://api.groq.com/openai/v1", "llama-3.1-8b-instant"),
         new AiProviderInfo(AiProviderKind.OpenRouter, "OpenRouter",
             "https://openrouter.ai/api/v1", "meta-llama/llama-3.1-8b-instruct:free"),
         new AiProviderInfo(AiProviderKind.Ollama, "Ollama (local)",

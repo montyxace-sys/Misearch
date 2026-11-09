@@ -71,7 +71,7 @@ public sealed class AiSettingsResolverTests
     }
 
     [Fact]
-    public void Translations_use_the_stronger_groq_model_by_default()
+    public void Translations_stay_on_the_small_model_by_default()
     {
         var settings = Enabled();
         settings.AiApiKeyProtected = AiKeyStore.Protect("gsk_abc");
@@ -79,7 +79,7 @@ public sealed class AiSettingsResolverTests
         var resolver = new AiSettingsResolver(settings);
 
         Assert.Equal("llama-3.1-8b-instant", resolver.Model);
-        Assert.Equal("llama-3.3-70b-versatile", resolver.TranslationModel);
+        Assert.Equal("llama-3.1-8b-instant", resolver.TranslationModel);
     }
 
     [Fact]
