@@ -35,54 +35,6 @@ public sealed class OpenAiCompatibleClientTests
     }
 
     [Fact]
-    public void A_translation_uses_the_preferred_model()
-    {
-        var request = new AiRequest
-        {
-            BaseUrl = "https://api.groq.com/openai/v1",
-            Model = "llama-3.1-8b-instant",
-            PreferredModel = "llama-3.3-70b-versatile",
-            Task = AiTask.Translate,
-            Messages = new[] { AiMessage.User("hola") }
-        };
-
-        var body = JsonNode.Parse(OpenAiCompatibleClient.BuildBody(request))!;
-
-        Assert.Equal("llama-3.3-70b-versatile", body["model"]!.GetValue<string>());
-    }
-
-    [Fact]
-    public void Other_tasks_keep_the_model_the_user_picked()
-    {
-        var request = new AiRequest
-        {
-            BaseUrl = "https://api.groq.com/openai/v1",
-            Model = "llama-3.1-8b-instant",
-            PreferredModel = "llama-3.3-70b-versatile",
-            Task = AiTask.Summarize,
-            Messages = new[] { AiMessage.User("hola") }
-        };
-
-        var body = JsonNode.Parse(OpenAiCompatibleClient.BuildBody(request))!;
-
-        Assert.Equal("llama-3.1-8b-instant", body["model"]!.GetValue<string>());
-    }
-
-    [Fact]
-    public void A_provider_without_a_preferred_model_falls_back_to_the_chosen_one()
-    {
-        var request = new AiRequest
-        {
-            BaseUrl = "http://127.0.0.1:11434/v1",
-            Model = "llama3.1",
-            Task = AiTask.Translate,
-            Messages = new[] { AiMessage.User("hola") }
-        };
-
-        Assert.Equal("llama3.1", OpenAiCompatibleClient.EffectiveModel(request));
-    }
-
-    [Fact]
     public void The_reply_text_is_read_from_the_first_choice()
     {
         var result = OpenAiCompatibleClient.ParseResponse("""

@@ -71,38 +71,6 @@ public sealed class AiSettingsResolverTests
     }
 
     [Fact]
-    public void Translations_stay_on_the_small_model_by_default()
-    {
-        var settings = Enabled();
-        settings.AiApiKeyProtected = AiKeyStore.Protect("gsk_abc");
-
-        var resolver = new AiSettingsResolver(settings);
-
-        Assert.Equal("llama-3.1-8b-instant", resolver.Model);
-        Assert.Equal("llama-3.1-8b-instant", resolver.TranslationModel);
-    }
-
-    [Fact]
-    public void A_model_picked_by_the_user_wins_for_translations_too()
-    {
-        var settings = Enabled();
-        settings.AiApiKeyProtected = AiKeyStore.Protect("gsk_abc");
-        settings.AiModel = "mi-modelo";
-
-        var resolver = new AiSettingsResolver(settings);
-
-        Assert.Equal("mi-modelo", resolver.TranslationModel);
-    }
-
-    [Fact]
-    public void A_provider_without_a_stronger_model_translates_with_the_same_one()
-    {
-        var resolver = new AiSettingsResolver(Enabled(AiProviderKind.Ollama));
-
-        Assert.Equal(resolver.Model, resolver.TranslationModel);
-    }
-
-    [Fact]
     public void The_request_is_built_from_the_settings()
     {
         var settings = Enabled();

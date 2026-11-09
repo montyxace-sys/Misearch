@@ -47,7 +47,7 @@ La IA está **desactivada por defecto** y no hay ninguna clave de MSoft implicad
 - La clave se cifra con DPAPI (`%AppData%\Misearch\settings.json`) y nunca se muestra completa en pantalla.
 - Solo se envía el texto de la página o la selección cuando pulsas un botón: ni historial, ni marcadores, ni direcciones salen del equipo.
 - El texto se recorta antes de enviarlo (12 000 caracteres en los resúmenes, 6 000 en traducciones) para no agotar los límites gratuitos.
-- Todo usa el mismo modelo que elijas (por defecto `llama-3.1-8b-instant` en Groq, el más rápido y con más cuota). Si traduces páginas largas y el resultado se salta líneas, pon `llama-3.3-70b-versatile` en Ajustes: traduce mejor y gasta cuota antes.
+- Un solo modelo para todo: el que elijas en Ajustes (por defecto `llama-3.1-8b-instant` en Groq, el más rápido y con más cuota). Si traduces páginas largas y el resultado se salta líneas, pon `llama-3.3-70b-versatile`: traduce mejor y gasta cuota antes.
 
 ## Privacidad y seguridad
 

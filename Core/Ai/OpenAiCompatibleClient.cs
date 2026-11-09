@@ -53,7 +53,7 @@ public sealed class OpenAiCompatibleClient : IAiClient
 
         var body = new JsonObject
         {
-            ["model"] = EffectiveModel(request),
+            ["model"] = request.Model,
             ["messages"] = messages,
             ["temperature"] = request.Temperature,
             ["max_tokens"] = request.MaxTokens,
@@ -61,15 +61,6 @@ public sealed class OpenAiCompatibleClient : IAiClient
         };
         return body.ToJsonString();
     }
-
-    /// <summary>
-    /// The model actually asked for: translations get the provider's better model when it
-    /// has one, because the small default drops lines and mixes languages on long pages.
-    /// </summary>
-    public static string EffectiveModel(AiRequest request) =>
-        request.Task == AiTask.Translate && !string.IsNullOrWhiteSpace(request.PreferredModel)
-            ? request.PreferredModel
-            : request.Model;
 
     /// <summary>Reads <c>choices[0].message.content</c> out of a chat-completions reply.</summary>
     public static AiResult ParseResponse(string json)
